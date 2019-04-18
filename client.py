@@ -35,7 +35,7 @@ class ssl_client:
     def init_client(self):
         # create ssl context
         self.context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH, cafile=self.server_cert)
-        self.context.load_cert_chain(certfile=self.client_cert, keyfile=self.client_key)
+        # self.context.load_cert_chain(certfile=self.client_cert, keyfile=self.client_key)
 
         # create socket
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
@@ -138,18 +138,17 @@ def main():
     
     # After login successs, print received opening message and enter main routine
     initial_msg = client.wait_for_msg()
-    print(initial_msg)
+    print(initial_msg.decode())
     while(True):
         try:
             request = input("Enter your request: ")
             msg = client.send_and_wait_for_msg(request.encode())
             print(msg)
-            if(msg.decode() == 'exit'):
+            if(msg.decode() == '0'):
                 break
         except Exception as e:
             print("Error occured", e)
             break
-
     print("Closing connection")
     client.close()
 
