@@ -15,7 +15,7 @@ This client will implemented with:
 
 '''
 
-
+DEBUG = False
 
 class ssl_client:
     def __init__(self, host_ip, port, server_hostname, server_cert, client_cert, client_key):
@@ -61,7 +61,8 @@ class ssl_client:
         if(self.verify_message(msg)):
             return msg
         # invalid username
-        print("Username not found")
+        if(DEBUG):
+            print("Username not found")
         self.sslsock.close()
         sys.exit()
 
@@ -94,7 +95,8 @@ class ssl_client:
         return True
     
     def wait_for_msg(self):
-        return self.sslsock.recv(1024)
+        packet = self.sslsock.recv(1024)
+        return packet
     
     def send_message(self, msg:bytes):
         self.sslsock.send(msg)
@@ -136,14 +138,17 @@ def main():
     if(status):
         debugLog.debug_message("login success")
     
-    # After login successs, print received opening message and enter main routine
-    initial_msg = client.wait_for_msg()
-    print(initial_msg.decode())
+    # After login successs wait for first packet
+    packet = client.wait_for_msg()
+    packet = json.loads(packet)
+    metadata = packet['metadata']
+    print(packet['msg'])
     while(True):
         try:
             request = input("Enter your request: ")
             msg = client.send_and_wait_for_msg(request.encode())
-            print(msg)
+            if(DEBUG):
+                print(msg)
             if(msg.decode() == '0'):
                 break
         except Exception as e:
