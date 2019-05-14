@@ -10,5 +10,3 @@ An end to end secure message channel. (CS351 project)
 - [x] Multithreading
 - [x] Allow a admin to view all connected clients
 - [x] Communication Module, a client send message to another client
-
-Report to bit more detail
