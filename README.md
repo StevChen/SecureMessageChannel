@@ -5,9 +5,10 @@ An end to end secure message channel. (CS351 project)
 # To do list:
 - [x] Building basic client and basic server using socket
 - [x] Wrapping client and server socket with SSL/TLS
-- [ ] Buiding Login Mechanism
-- [ ] Allow Multiple clients login at the same time
-- [ ] Multithreading
-- [ ] Allow a client to view all connected clients
-- [ ] Build secure channel between clients
+- [x] Buiding Login Mechanism
+- [x] Allow Multiple clients login at the same time
+- [x] Multithreading
+- [x] Allow a admin to view all connected clients
+- [x] Communication Module, a client send message to another client
 
+Report to bit more detail

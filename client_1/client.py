@@ -192,7 +192,7 @@ def main():
                     else:
                         packet = {'id': request, 'user' : friend, 'key': session_key.exportKey('PEM').decode()}
                         packet = json.dumps(packet)
-                        print('send my key ', packet)
+                        # print('send my key ', packet)
                         if(DEBUG):
                             # print('session key: ', session_key)
                             pass
