@@ -3,6 +3,7 @@ import ssl
 import sys
 import json
 import hashlib
+from Crypto.PublicKey import RSA
 from utility import Debug_Message, getUsername, getPassword
 
 '''
@@ -15,7 +16,7 @@ This client will implemented with:
 
 '''
 
-DEBUG = False
+DEBUG = True
 
 class ssl_client:
     def __init__(self, host_ip, port, server_hostname, server_cert, client_cert, client_key):
@@ -63,13 +64,14 @@ class ssl_client:
         # invalid username
         if(DEBUG):
             print("Username not found")
-        self.sslsock.close()
-        sys.exit()
+            self.sslsock.close()
+            sys.exit()
+        return msg
 
 
-    def send_password(self):
+    def send_password(self, salt):
         hasher = hashlib.sha256()
-        hasher.update(getPassword().encode())
+        hasher.update((getPassword() + salt).encode())
         password = hasher.hexdigest()
         # trying to send password
         try:
@@ -88,14 +90,18 @@ class ssl_client:
 
     def login(self):
         # send username and possible get the salt
-        msg = self.send_username()
+        salt = self.send_username()
+        if(DEBUG):
+            print('Recevied Salt: ', salt.decode())
         # debugLog.debug_message("send user success")
         # send password
-        msg = self.send_password()
+        msg = self.send_password(salt.decode())
         return True
     
     def wait_for_msg(self):
         packet = self.sslsock.recv(1024)
+        if(DEBUG):
+            print("Got packet ", packet)
         return packet
     
     def send_message(self, msg:bytes):
@@ -114,7 +120,7 @@ def main():
     debugLog = Debug_Message(True)
 
     host_addr = '127.0.0.1'
-    host_port = 8082
+    host_port = 8083
     server_sni_hostname = 'localPyserver.com'
     server_cert = 'server.crt'
     client_cert = 'client.crt'
@@ -133,6 +139,7 @@ def main():
 
     print("Connection Success")
 
+
     # Send login infomation to the server
     status = client.login()
     if(status):
@@ -146,11 +153,22 @@ def main():
     while(True):
         try:
             request = input("Enter your request: ")
-            msg = client.send_and_wait_for_msg(request.encode())
-            if(DEBUG):
-                print(msg)
-            if(msg.decode() == '0'):
-                break
+            if(request == '2'):
+                print(metadata['friends'])
+            elif(request == '3'):
+                print(metadata['friends'])
+                friend = input("Who would you like to chat?")
+                if(friend not in metadata['friends']):
+                    print('friend not found')
+                else:
+                    print(key)
+                    msg = client.send_and_wait_for_msg(request.encode())
+                    print(msg)
+            else:
+                packet = build_pack(request, )
+                msg = client.send_and_wait_for_msg(request.encode())
+                if(DEBUG):
+                    print(msg)
         except Exception as e:
             print("Error occured", e)
             break
